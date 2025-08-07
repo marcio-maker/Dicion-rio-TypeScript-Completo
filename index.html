@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicionário TypeScript Completo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3178c6;
+            --secondary: #2d3748;
+            --accent: #4fd1c5;
+            --text: #2d3748;
+            --text-light: #718096;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #search {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        #search:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(49, 120, 198, 0.2);
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background-color: var(--card-bg);
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        .tag-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .tag-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tag-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .tag-category {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-bottom-left-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .tag-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tag-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(79, 209, 197, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        .tag-title {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .tag-description {
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .tag-example {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            border-left: 4px solid var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .tag-keyword {
+            font-weight: bold;
+            color: #d63384;
+        }
+
+        .tag-type {
+            font-weight: bold;
+            color: #3182ce;
+        }
+
+        .tag-image {
+            width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #eee;
+            max-height: 200px;
+            object-fit: cover;
+        }
+
+        .tag-utility {
+            font-size: 14px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .tag-utility i {
+            margin-right: 5px;
+            color: var(--accent);
+        }
+
+        .concept-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .concept-table th, .concept-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .concept-table th {
+            background-color: #edf2f7;
+            color: var(--secondary);
+        }
+
+        .concept-table tr:hover {
+            background-color: #f7fafc;
+        }
+
+        .concept-table .highlight {
+            background-color: rgba(79, 209, 197, 0.1);
+            font-weight: bold;
+        }
+
+        .no-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px 0;
+            color: var(--text-light);
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .tag-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .filter-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tag-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .tag-icon {
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tag-card {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .tag-card:nth-child(1) { animation-delay: 0.1s; }
+        .tag-card:nth-child(2) { animation-delay: 0.2s; }
+        .tag-card:nth-child(3) { animation-delay: 0.3s; }
+        .tag-card:nth-child(4) { animation-delay: 0.4s; }
+        .tag-card:nth-child(5) { animation-delay: 0.5s; }
+        .tag-card:nth-child(6) { animation-delay: 0.6s; }
+        .tag-card:nth-child(7) { animation-delay: 0.7s; }
+        .tag-card:nth-child(8) { animation-delay: 0.8s; }
+        .tag-card:nth-child(9) { animation-delay: 0.9s; }
+        .tag-card:nth-child(10) { animation-delay: 1s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-book"></i> Dicionário TypeScript Completo</h1>
+            <p class="subtitle">Tudo o que você precisa saber para escrever código TypeScript robusto, limpo e escalável</p>
+        </header>
+        
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Pesquisar conceitos (ex: interface, generic, enum)...">
+            <button id="clearSearch" class="filter-btn"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-category="all">Todos</button>
+            <button class="filter-btn" data-category="Tipos Básicos">Tipos Básicos</button>
+            <button class="filter-btn" data-category="Tipos Avançados">Tipos Avançados</button>
+            <button class="filter-btn" data-category="Interfaces e Tipos">Interfaces & Tipos</button>
+            <button class="filter-btn" data-category="Classes">Classes</button>
+            <button class="filter-btn" data-category="Funções">Funções</button>
+            <button class="filter-btn" data-category="Genéricos">Genéricos</button>
+            <button class="filter-btn" data-category="Módulos">Módulos</button>
+            <button class="filter-btn" data-category="Decorators">Decorators</button>
+            <button class="filter-btn" data-category="Avancados">Avançados</button>
+        </div>
+        
+        <div class="tag-container" id="tagContainer">
+            <!-- As tags serão inseridas aqui via JavaScript -->
+        </div>
+
+        <div class="concepts-section">
+            <h2 style="margin: 40px 0 20px; color: var(--primary);">Conceitos Complementares</h2>
+            
+            <table class="concept-table">
+                <thead>
+                    <tr>
+                        <th>Conceito</th>
+                        <th>Utilidade Principal</th>
+                        <th>Quando Usar</th>
+                        <th>Exemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="highlight">Type Guards</td>
+                        <td>Verificação de tipos em tempo de execução</td>
+                        <td>Quando você precisa diferenciar entre tipos em runtime</td>
+                        <td><code>if (typeof x === 'string') { ... }</code></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight">Type Inference</td>
+                        <td>Tipagem automática pelo compilador</td>
+                        <td>Sempre que possível para reduzir código redundante</td>
+                        <td><code>let x = 10; // Tipo inferido como number</code></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight">Utility Types</td>
+                        <td>Manipulação prática de tipos</td>
+                        <td>Para transformar tipos existentes de forma declarativa</td>
+                        <td><code>type PartialUser = Partial&lt;User&gt;;</code></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight">Declaration Files</td>
+                        <td>Tipagem para bibliotecas externas</td>
+                        <td>Quando usando libs JS ou criando definições de tipo</td>
+                        <td><code>declare module 'lib' { ... }</code></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight">Type Predicates</td>
+                        <td>Funções que atuam como type guards</td>
+                        <td>Para funções personalizadas de verificação de tipo</td>
+                        <td><code>function isCat(pet: Pet): pet is Cat { ... }</code></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight">Index Types</td>
+                        <td>Acesso dinâmico a propriedades</td>
+                        <td>Quando trabalhar com propriedades desconhecidas em tempo de compilação</td>
+                        <td><code>function getProperty&lt;T, K extends keyof T&gt;(obj: T, key: K) { ... }</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <footer>
+            <p>Dicionário TypeScript &copy; 2023 | Atualizado com TypeScript 5.x</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                <i class="fas fa-lightbulb"></i> Dica: Use este dicionário como referência diária para melhorar sua proficiência em TypeScript!
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Dados das tags TypeScript com imagens e informações adicionais
+        const typescriptTags = [
+            {
+                category: "Tipos Básicos",
+                title: "number",
+                description: "Representa valores numéricos, tanto inteiros quanto pontos flutuantes. O TypeScript não diferencia entre inteiros e decimais - todos são do tipo number.",
+                example: "let age: number = 30;\nlet price: number = 19.99;\nlet hex: number = 0xf00d; // Hexadecimal\nlet binary: number = 0b1010; // Binário\nlet octal: number = 0o744; // Octal",
+                utility: "Fundamental para qualquer operação matemática ou representação de quantidades",
+                icon: "fas fa-hashtag",
+                image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Tipos Básicos",
+                title: "string",
+                description: "Representa dados textuais. Pode ser declarado com aspas simples, duplas ou crases (template strings). As template strings permitem interpolação e múltiplas linhas.",
+                example: "let name: string = 'João';\nlet message: string = `Olá, ${name}`; // Template string\nlet multiline: string = `Linha 1\nLinha 2`;",
+                utility: "Manipulação de texto, exibição de informações, templates UI",
+                icon: "fas fa-quote-right",
+                image: "https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Tipos Básicos",
+                title: "boolean",
+                description: "Representa valores verdadeiros ou falsos. Fundamental para lógica condicional e controles de fluxo. No TypeScript, os valores são true e false (diferente de truthy/falsy do JavaScript).",
+                example: "let isActive: boolean = true;\nlet hasPermission: boolean = false;\n\n// Uso em condições\nif (isActive) {\n  console.log('Ativo!');\n}",
+                utility: "Controle de fluxo, flags, condições lógicas",
+                icon: "fas fa-check-circle",
+                image: "https://images.unsplash.com/photo-1581093450021-4a7360e9a7b8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Tipos Básicos",
+                title: "Array",
+                description: "Representa uma coleção de valores do mesmo tipo. Pode ser declarado de duas formas: tipo[] ou Array<tipo>. Arrays são mutáveis e podem ser modificados após a criação.",
+                example: "let numbers: number[] = [1, 2, 3];\nlet names: Array<string> = ['Ana', 'Carlos'];\n\n// Métodos de array\nnumbers.push(4); // [1, 2, 3, 4]\nconst doubled = numbers.map(n => n * 2); // [2, 4, 6, 8]",
+                utility: "Coleções ordenadas, listas de itens, manipulação de dados",
+                icon: "fas fa-layer-group",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Tipos Básicos",
+                title: "Tuple",
+                description: "Permite expressar um array com um número fixo de elementos onde cada um tem seu próprio tipo. Útil quando você sabe exatamente quantos elementos contém e de quais tipos.",
+                example: "let person: [string, number] = ['João', 30];\nlet rgb: [number, number, number] = [255, 0, 0];\n\n// Acesso indexado\nconst name = person[0]; // string\nconst age = person[1]; // number\n\n// Erro: Tipo incorreto\n// person = [30, 'João']; // Error",
+                utility: "Pares chave-valor fixos, retorno múltiplo de funções",
+                icon: "fas fa-code-branch",
+                image: "https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Tipos Básicos",
+                title: "enum",
+                description: "Fornece uma maneira de definir um conjunto de constantes nomeadas. Enums podem ser numéricos ou baseados em strings. Por padrão, enums começam com 0 e incrementam, mas podem ter valores personalizados.",
+                example: "// Numérico (padrão)\nenum Direction {\n  Up,    // 0\n  Down,  // 1\n  Left,  // 2\n  Right  // 3\n}\n\n// String enum\nenum UserRole {\n  Admin = 'ADMIN',\n  User = 'USER',\n  Guest = 'GUEST'\n}\n\nlet move: Direction = Direction.Up;",
+                utility: "Conjuntos fixos de opções, substitui magic numbers/strings",
+                icon: "fas fa-list-ol",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Tipos Avançados",
+                title: "any",
+                description: "Desativa a verificação de tipo para uma variável. Útil para migração de JS para TS ou quando o tipo é realmente dinâmico. Deve ser evitado quando possível para manter os benefícios do TypeScript.",
+                example: "let dynamicValue: any = 10;\ndynamicValue = 'texto'; // Ok\ndynamicValue = true; // Ok\n\n// Não há verificação de tipo\ndynamicValue.toUpperCase(); // Compila, mas pode dar erro em runtime",
+                utility: "Migração gradual, integração com libs JS dinâmicas",
+                icon: "fas fa-ban",
+                image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Tipos Avançados",
+                title: "unknown",
+                description: "Semelhante ao any, mas mais seguro pois requer verificação de tipo antes de ser usado. Representa um valor sobre o qual não sabemos nada, então o TypeScript nos força a fazer verificações antes de usar.",
+                example: "let userInput: unknown;\nlet userName: string;\n\nuserInput = 10;\nuserInput = 'Texto';\n\n// Erro: unknown não pode ser atribuído diretamente\n// userName = userInput;\n\n// Ok após verificação\nif (typeof userInput === 'string') {\n  userName = userInput;\n}",
+                utility: "Alternativa segura ao any para dados dinâmicos",
+                icon: "fas fa-question-circle",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Tipos Avançados",
+                title: "void",
+                description: "Usado como tipo de retorno para funções que não retornam valor. Diferente de undefined, void significa que o valor de retorno deve ser ignorado (como em callbacks).",
+                example: "function logMessage(message: string): void {\n  console.log(message);\n}\n\n// Arrow function com void\nconst showError = (msg: string): void => {\n  console.error(msg);\n};",
+                utility: "Funções com efeitos colaterais, callbacks sem retorno",
+                icon: "fas fa-arrow-right",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Tipos Avançados",
+                title: "never",
+                description: "Representa o tipo de valores que nunca ocorrem. Usado para funções que sempre lançam exceções ou loops infinitos. Também aparece quando o TypeScript determina que não há possíveis valores restantes em uma união.",
+                example: "function throwError(message: string): never {\n  throw new Error(message);\n}\n\nfunction infiniteLoop(): never {\n  while (true) {\n    // Loop infinito\n  }\n}\n\n// Exemplo com união\ntype AllowedValues = 'yes' | 'no';\nfunction handleValue(val: AllowedValues) {\n  if (val === 'yes') {\n    // Faz algo\n  } else if (val === 'no') {\n    // Faz outra coisa\n  } else {\n    // val tem tipo never aqui\n  }\n}",
+                utility: "Funções que nunca retornam, exaustividade em unions",
+                icon: "fas fa-times-circle",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Interfaces e Tipos",
+                title: "interface",
+                description: "Define a estrutura de um objeto, especificando quais propriedades/métodos ele deve ter. Pode ser estendida por outras interfaces e implementada por classes. Melhor para definir formas de objetos.",
+                example: "interface User {\n  id: number;\n  name: string;\n  email?: string; // Propriedade opcional\n  \n  // Método\n  greet(phrase: string): void;\n}\n\n// Implementação\nclass Admin implements User {\n  id: number;\n  name: string;\n  \n  constructor(id: number, name: string) {\n    this.id = id;\n    this.name = name;\n  }\n  \n  greet(phrase: string) {\n    console.log(`${phrase} ${this.name}`);\n  }\n}",
+                utility: "Contratos de objetos, definição de APIs, formas complexas",
+                icon: "fas fa-project-diagram",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Interfaces e Tipos",
+                title: "type",
+                description: "Permite criar um alias para um tipo existente ou definir tipos complexos. Pode representar primitivos, uniões, tuplas, etc. Mais flexível que interface para alguns casos.",
+                example: "// Alias para primitivo\ntype ID = number | string;\n\n// Objeto\ntype Point = {\n  x: number;\n  y: number;\n};\n\n// Função\ntype GreetFunction = (name: string) => string;\n\n// Tupla\ntype Data = [number, string, boolean];\n\n// Union\ntype Status = 'pending' | 'completed' | 'failed';",
+                utility: "Alias para tipos complexos, uniões, interseções, utilitários",
+                icon: "fas fa-tag",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Interfaces e Tipos",
+                title: "Union Types",
+                description: "Permite que uma variável seja de um entre vários tipos. Útil quando um valor pode ser de diferentes tipos em diferentes momentos. O TypeScript só permitirá operações que são comuns a todos os tipos na união.",
+                example: "function printId(id: number | string) {\n  console.log(`ID: ${id}`);\n}\n\nprintId(101); // Ok\nprintId('abc101'); // Ok\n// printId(true); // Erro\n\n// Type narrowing\nfunction printIdUpper(id: number | string) {\n  if (typeof id === 'string') {\n    // id é string aqui\n    console.log(id.toUpperCase());\n  } else {\n    // id é number aqui\n    console.log(id.toFixed(2));\n  }\n}",
+                utility: "Valores flexíveis que podem ser de vários tipos",
+                icon: "fas fa-random",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Interfaces e Tipos",
+                title: "Intersection Types",
+                description: "Combina múltiplos tipos em um único tipo que tem todas as propriedades. Útil para composição de tipos e mixins. O tipo resultante terá todas as propriedades de todos os tipos combinados.",
+                example: "type Employee = {\n  id: number;\n  name: string;\n};\n\ntype Manager = Employee & {\n  department: string;\n  subordinates: Employee[];\n};\n\nlet manager: Manager = {\n  id: 1,\n  name: 'Carlos',\n  department: 'TI',\n  subordinates: [{ id: 2, name: 'Ana' }]\n};\n\n// Com interfaces\ninterface Serializable {\n  serialize(): string;\n}\n\ninterface Loggable {\n  log(): void;\n}\n\ntype Logger = Serializable & Loggable;",
+                utility: "Composição de tipos, mixins, extensão de interfaces",
+                icon: "fas fa-plus-circle",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Classes",
+                title: "class",
+                description: "Define um modelo para criar objetos com propriedades e métodos. O TypeScript adiciona tipagem e modificadores de acesso ao padrão de classes do JavaScript. Suporta herança, encapsulamento e polimorfismo.",
+                example: "class Person {\n  // Propriedades (precisa declarar no TS)\n  name: string;\n  private age: number; // Privado\n  \n  // Construtor\n  constructor(name: string, age: number) {\n    this.name = name;\n    this.age = age;\n  }\n  \n  // Método\n  greet() {\n    console.log(`Olá, meu nome é ${this.name} e tenho ${this.age} anos`);\n  }\n  \n  // Getter\n  get isAdult(): boolean {\n    return this.age >= 18;\n  }\n}\n\nconst person = new Person('Ana', 25);\nperson.greet();\n// person.age; // Erro: age é privado",
+                utility: "OOP, encapsulamento, modelagem de domínio",
+                icon: "fas fa-cube",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Classes",
+                title: "public, private, protected",
+                description: "Modificadores de acesso que controlam a visibilidade dos membros da classe. No TypeScript, por padrão todos são públicos. Private restringe ao escopo da classe, protected permite acesso em subclasses.",
+                example: "class Animal {\n  public name: string; // Padrão (pode ser omitido)\n  private age: number; // Só acessível dentro da classe\n  protected species: string; // Acessível na classe e subclasses\n  \n  constructor(name: string, age: number, species: string) {\n    this.name = name;\n    this.age = age;\n    this.species = species;\n  }\n  \n  private getAge(): number {\n    return this.age; // Ok\n  }\n}\n\nclass Dog extends Animal {\n  bark() {\n    console.log(`O ${this.species} ${this.name} está latindo!`);\n    // this.age; // Erro: age é privado\n  }\n}\n\nconst dog = new Dog('Rex', 5, 'Cachorro');\ndog.bark();\n// dog.species; // Erro: species é protected",
+                utility: "Encapsulamento, controle de acesso, API pública/privada",
+                icon: "fas fa-lock",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Classes",
+                title: "readonly",
+                description: "Torna uma propriedade somente leitura, podendo ser atribuída apenas na declaração ou no construtor. Similar ao const, mas para propriedades de classe. Garante imutabilidade após a inicialização.",
+                example: "class Circle {\n  readonly PI = 3.14;\n  readonly radius: number;\n  \n  constructor(radius: number) {\n    this.radius = radius;\n  }\n  \n  get area(): number {\n    return this.PI * this.radius ** 2;\n  }\n  \n  // setRadius(newRadius: number) {\n  //   this.radius = newRadius; // Erro: radius é readonly\n  // }\n}\n\nconst circle = new Circle(10);\nconsole.log(circle.area);\n// circle.radius = 20; // Erro",
+                utility: "Propriedades imutáveis, constantes em classes",
+                icon: "fas fa-eye",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Classes",
+                title: "abstract",
+                description: "Classes abstratas não podem ser instanciadas diretamente e podem conter métodos abstratos que devem ser implementados pelas subclasses. Útil para definir contratos e compartilhar comportamento comum.",
+                example: "abstract class Animal {\n  abstract makeSound(): void; // Método abstrato\n  \n  move(): void { // Método concreto\n    console.log('Moving...');\n  }\n}\n\nclass Dog extends Animal {\n  makeSound() { // Implementação obrigatória\n    console.log('Woof!');\n  }\n}\n\nclass Cat extends Animal {\n  makeSound() {\n    console.log('Meow!');\n  }\n}\n\n// const animal = new Animal(); // Erro: Animal é abstrata\nconst dog = new Dog();\ndog.makeSound();\ndog.move();",
+                utility: "Hierarquias de classes, contratos de implementação",
+                icon: "fas fa-shapes",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Funções",
+                title: "Function Overloads",
+                description: "Permite definir múltiplas assinaturas para uma função com diferentes tipos de parâmetros e retornos. A implementação deve lidar com todas as variações. Útil para APIs flexíveis.",
+                example: "// Sobrecargas\ngetData(id: number): string;\ngetData(query: string): string[];\n\n// Implementação\ngetData(param: number | string): string | string[] {\n  if (typeof param === 'number') {\n    return `Dados do ID ${param}`;\n  } else {\n    return ['dado1', 'dado2', 'dado3'];\n  }\n}\n\n// Uso\nconst result1 = getData(1); // string\nconst result2 = getData('search'); // string[]\n// const result3 = getData(true); // Erro",
+                utility: "APIs flexíveis com múltiplas formas de chamada",
+                icon: "fas fa-exchange-alt",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Genéricos",
+                title: "Generics",
+                description: "Permite criar componentes reutilizáveis que funcionam com vários tipos em vez de um único. Os genéricos preservam a informação de tipo enquanto fornecem flexibilidade.",
+                example: "// Função genérica\nfunction identity<T>(arg: T): T {\n  return arg;\n}\n\nlet output1 = identity<string>('texto'); // Tipo de saída: string\nlet output2 = identity<number>(100); // Tipo de saída: number\n\n// Inferência\ngetData(param: number | string): string | string[] {\n  if (typeof param === 'number') {\n    return `Dados do ID ${param}`;\n  } else {\n    return ['dado1', 'dado2', 'dado3'];\n  }\n}\n\n// Uso\nconst result1 = getData(1); // string\nconst result2 = getData('search'); // string[]\n// const result3 = getData(true); // Erro",
+                utility: "Componentes reutilizáveis, estruturas de dados flexíveis",
+                icon: "fas fa-code",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Decorators",
+                title: "Decorators",
+                description: "Funções especiais que podem ser anexadas a classes, métodos, propriedades ou parâmetros para modificar seu comportamento. Usados extensivamente em frameworks como Angular.",
+                example: "// Decorator de método\nfunction log(target: any, key: string, descriptor: PropertyDescriptor) {\n  const originalMethod = descriptor.value;\n  \n  descriptor.value = function(...args: any[]) {\n    console.log(`Chamando ${key} com args: ${JSON.stringify(args)}`);\n    const result = originalMethod.apply(this, args);\n    console.log(`Resultado: ${result}`);\n    return result;\n  };\n  \n  return descriptor;\n}\n\nclass Calculator {\n  @log\n  add(a: number, b: number): number {\n    return a + b;\n  }\n}\n\nconst calc = new Calculator();\ncalc.add(2, 3); // Logs a chamada e o resultado",
+                utility: "Metaprogramação, AOP (Aspect-Oriented Programming)",
+                icon: "fas fa-magic",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Avancados",
+                title: "Mapped Types",
+                description: "Permite criar novos tipos transformando propriedades de tipos existentes. Útil para criar variações de tipos (como Partial, Readonly) de forma programática.",
+                example: "interface Person {\n  name: string;\n  age: number;\n  email: string;\n}\n\n// Torna todas as propriedades opcionais\ntype PartialPerson = { [P in keyof Person]?: Person[P] };\n\n// Equivalente a:\n// type PartialPerson = {\n//   name?: string;\n//   age?: number;\n//   email?: string;\n// }\n\n// Torna todas readonly\ntype ReadonlyPerson = { readonly [P in keyof Person]: Person[P] };\n\n// Com tipo genérico (como o Partial nativo)\ntype MyPartial<T> = {\n  [P in keyof T]?: T[P]\n};",
+                utility: "Transformação de tipos, criação de utilitários",
+                icon: "fas fa-map",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                category: "Avancados",
+                title: "Conditional Types",
+                description: "Tipos que selecionam um de dois tipos possíveis com base em uma condição. Permite lógica complexa no sistema de tipos. Usado extensivamente em tipos utilitários.",
+                example: "// Tipo condicional básico\ntype IsString<T> = T extends string ? true : false;\n\ntype A = IsString<string>; // true\ntype B = IsString<number>; // false\n\n// Extrair tipo de elementos de array\ntype ElementType<T> = T extends (infer U)[] ? U : never;\n\ntype Items = ElementType<string[]>; // string\ntype Numbers = ElementType<number[]>; // number\n\n// Exemplo útil: tipo NonNullable\ntype NonNullable<T> = T extends null | undefined ? never : T;\n\ntype X = NonNullable<string | null>; // string",
+                utility: "Lógica complexa em tipos, tipos utilitários",
+                icon: "fas fa-question",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            }
+        ];
+
+        // Função para renderizar as tags
+        function renderTags(tags) {
+            const container = document.getElementById('tagContainer');
+            
+            if (tags.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px; color: var(--text-light);"></i>
+                        <h3>Nenhum resultado encontrado</h3>
+                        <p>Tente usar termos diferentes ou verifique a ortografia</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Agrupar por categoria se mostrar tudo
+            const showAll = document.querySelector('.filter-btn.active').dataset.category === 'all';
+            const categories = {};
+            
+            tags.forEach(tag => {
+                if (showAll) {
+                    if (!categories[tag.category]) {
+                        categories[tag.category] = [];
+                    }
+                    categories[tag.category].push(tag);
+                } else {
+                    if (!categories['Filtrado']) {
+                        categories['Filtrado'] = [];
+                    }
+                    categories['Filtrado'].push(tag);
+                }
+            });
+            
+            // Renderizar cada categoria
+            for (const [category, tagsInCategory] of Object.entries(categories)) {
+                if (showAll) {
+                    const categoryElement = document.createElement('h2');
+                    categoryElement.className = 'category';
+                    categoryElement.textContent = category;
+                    container.appendChild(categoryElement);
+                }
+                
+                tagsInCategory.forEach(tag => {
+                    const card = document.createElement('div');
+                    card.className = 'tag-card';
+                    
+                    // Categoria
+                    if (showAll) {
+                        const categoryBadge = document.createElement('div');
+                        categoryBadge.className = 'tag-category';
+                        categoryBadge.textContent = tag.category;
+                        card.appendChild(categoryBadge);
+                    }
+                    
+                    // Header com ícone
+                    const header = document.createElement('div');
+                    header.className = 'tag-header';
+                    
+                    const icon = document.createElement('div');
+                    icon.className = 'tag-icon';
+                    icon.innerHTML = `<i class="${tag.icon}"></i>`;
+                    header.appendChild(icon);
+                    
+                    const title = document.createElement('h2');
+                    title.className = 'tag-title';
+                    title.textContent = tag.title;
+                    header.appendChild(title);
+                    
+                    card.appendChild(header);
+                    
+                    // Descrição
+                    const description = document.createElement('p');
+                    description.className = 'tag-description';
+                    description.textContent = tag.description;
+                    card.appendChild(description);
+                    
+                    // Imagem (se existir)
+                    if (tag.image) {
+                        const img = document.createElement('img');
+                        img.className = 'tag-image';
+                        img.src = tag.image;
+                        img.alt = `Exemplo visual para ${tag.title}`;
+                        card.appendChild(img);
+                    }
+                    
+                    // Exemplo de código
+                    const example = document.createElement('pre');
+                    example.className = 'tag-example';
+                    example.innerHTML = highlightKeywords(tag.example);
+                    card.appendChild(example);
+                    
+                    // Utilidade
+                    const utility = document.createElement('div');
+                    utility.className = 'tag-utility';
+                    utility.innerHTML = `<i class="fas fa-lightbulb"></i> <strong>Utilidade:</strong> ${tag.utility}`;
+                    card.appendChild(utility);
+                    
+                    container.appendChild(card);
+                });
+            }
+        }
+        
+        // Função para destacar palavras-chave nos exemplos
+        function highlightKeywords(code) {
+            const keywords = [
+                'let', 'const', 'var', 'function', 'class', 'interface', 'type', 
+                'enum', 'extends', 'implements', 'public', 'private', 'protected', 
+                'readonly', 'abstract', 'as', 'any', 'unknown', 'never', 'void', 
+                'number', 'string', 'boolean', 'object', 'symbol', 'null', 'undefined',
+                'this', 'new', 'infer', 'keyof', 'typeof', 'instanceof', 'return',
+                'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'default',
+                'try', 'catch', 'finally', 'throw', 'import', 'export', 'from',
+                'namespace', 'declare', 'module', 'require', 'await', 'async',
+                'static', 'get', 'set', 'constructor', 'super', 'of', 'in'
+            ];
+            
+            const types = [
+                'number', 'string', 'boolean', 'object', 'symbol', 'void', 'any',
+                'unknown', 'never', 'null', 'undefined'
+            ];
+            
+            // Destacar keywords
+            code = code.replace(
+                new RegExp(`\\b(${keywords.join('|')})\\b`, 'g'),
+                '<span class="tag-keyword">$1</span>'
+            );
+            
+            // Destacar tipos
+            code = code.replace(
+                new RegExp(`\\b(${types.join('|')})\\b`, 'g'),
+                '<span class="tag-type">$1</span>'
+            );
+            
+            return code;
+        }
+        
+        // Função de busca
+        document.getElementById('search').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            filterTags();
+        });
+        
+        // Limpar busca
+        document.getElementById('clearSearch').addEventListener('click', function() {
+            document.getElementById('search').value = '';
+            filterTags();
+        });
+        
+        // Filtros por categoria
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterTags();
+            });
+        });
+        
+        // Função principal de filtro
+        function filterTags() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const activeCategory = document.querySelector('.filter-btn.active').dataset.category;
+            
+            const filteredTags = typescriptTags.filter(tag => {
+                const matchesSearch = 
+                    tag.title.toLowerCase().includes(searchTerm) || 
+                    tag.description.toLowerCase().includes(searchTerm) ||
+                    tag.category.toLowerCase().includes(searchTerm) ||
+                    tag.example.toLowerCase().includes(searchTerm) ||
+                    tag.utility.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = 
+                    activeCategory === 'all' || 
+                    tag.category === activeCategory;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            renderTags(filteredTags);
+        }
+        
+        // Renderizar todas as tags inicialmente
+        renderTags(typescriptTags);
+    </script>
+</body>
+</html>
